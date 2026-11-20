@@ -29,7 +29,6 @@ import tftpy
 import socket
 import signal
 import urllib
-import dvrlib
 import datetime
 import threading
 import recordinglib
@@ -582,34 +581,6 @@ class RecordList:
 		return
 
 	########## End of Function ##########
-
-	def getDVRDetails(self, infoFileName):
-
-	# Create an object for DVR details
-
-	# Syntax      : OBJ.getDVRDetails()
-	# Description : Create an object of DVR Details
-	# Parameters  : logFileName - path to file name having the DVR details
-	# Return Value: An instance of class DVRDetails
-
-		ipAddress = self.ip
-		port = self.logTransferPort
-		recordedUrlLogPath = infoFileName
-
-		destinationLogPath = self.realpath + "fileStore/"
-		destinationLogPath = destinationLogPath + str(self.execID) + "_RecordedUrlsLog.txt"
-		if self.downloadFile(ipAddress, port, recordedUrlLogPath, destinationLogPath) == 0:
-                        print "#TDK_@error-ERROR : Unable to fetch recording details !!! "
-                	sys.stdout.flush()
-			exit()
-		else:
-    			dvrObj = dvrlib.DVRDetails (destinationLogPath)
-
-		sys.stdout.flush()
-		return dvrObj
-
-        ########## End of Function ##########
-
 
 
 def addTxtEle(xmlLogDom,parentElement,tagName,contentText):

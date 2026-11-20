@@ -2050,49 +2050,6 @@ def Create_ExecuteTestcase(obj,primitivetest,expectedresult,verifyList, **kwargs
 #To decide crash monitor is started or not
 crash_monitor_status = False
 
-def getDeviceConfigElements(self, configKeys):
-    url = self.url + '/deviceGroup/getDeviceDetails?deviceIp=' + self.IP
-    try:
-        response = urllib.request.urlopen(url).read()
-        deviceDetails = json.loads(response)
-    except:
-        print ("Unable to get Device Details from REST !!!")
-        exit()
-
-    sys.stdout.flush()
-
-    deviceName = deviceDetails['devicename']
-    deviceType = deviceDetails['boxtype']
-    configPath = self.realpath + "/"   + "fileStore/tdkvRDKServiceConfig"
-    deviceNameConfigFile = configPath + "/" + deviceName + ".config"
-    deviceTypeConfigFile = configPath + "/" + deviceType + ".config"
-
-    deviceConfigFile = ""
-    configValue = ""
-    output = []
-
-    if os.path.exists(deviceNameConfigFile):
-        deviceConfigFile = deviceNameConfigFile
-    elif os.path.exists(deviceTypeConfigFile):
-        deviceConfigFile = deviceTypeConfigFile
-    else:
-        output = "FAILURE : No Device config file found : " + deviceNameConfigFile + " or " + deviceTypeConfigFile
-        print (output)
-
-    try:
-        if deviceConfigFile and configKeys:
-            config = configparser.ConfigParser()
-            config.read(deviceConfigFile)
-            deviceConfig = config.sections()[0]
-            for key in configKeys:
-                configValue = config.get(deviceConfig, key)
-                output.append(configValue)
-        else:
-            output = "FAILURE : DeviceConfig file or key cannot be empty"
-    except Exception as e:
-        output = "FAILURE : Exception Occurred: [" + inspect.stack()[0][3] + "] " + str(e)
-
-    return output
 
 #Variable to keep track of the number of core dump files generated
 corefile_count = 0
