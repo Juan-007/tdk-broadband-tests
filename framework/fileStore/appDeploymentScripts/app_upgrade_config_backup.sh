@@ -34,15 +34,6 @@ log_file="/$log_dir/config_backup_$(date +%Y%m%d_%H%M%S).log"
 echo "Starting script execution at $(date)" | tee -a "$log_file"
 
 # ...existing code...
-source_file_video="/opt/tomcat/webapps/tdkservice/fileStore/tdkvRDKServiceConfig/Video_Accelerator.config"
-backup_dir_video="$backup_dir/tdkvRDKServiceConfig"
-destination_dir_video="/opt/tomcat/webapps/tdkservice/fileStore/tdkvRDKServiceConfig/"
-source_file_device="/opt/tomcat/webapps/tdkservice/fileStore/tdkvDeviceConfig/sampleDevice.config"
-backup_dir_device="$backup_dir/tdkvDeviceConfig"
-destination_dir_device="/opt/tomcat/webapps/tdkservice/fileStore/tdkvDeviceConfig/"
-source_file_device_capabilities="/opt/tomcat/webapps/tdkservice/fileStore/tdkvDeviceCapabilities/Video_Accelerator_deviceCapability.ini"
-backup_dir_device_capabilities="$backup_dir/tdkvDeviceCapabilities"
-destination_dir_device_capabilities="/opt/tomcat/webapps/tdkservice/fileStore/tdkvDeviceCapabilities/"
 backup_file_browser_validation="$backup_dir/BrowserPerformanceVariables.py"
 source_file_browser_validation="/opt/tomcat/webapps/tdkservice/fileStore/BrowserPerformanceVariables.py"
 destination_dir_browser_validation="/opt/tomcat/webapps/tdkservice/fileStore/"
@@ -209,32 +200,9 @@ process_all_pythons() {
 
 # Excluded files
 exclude_files=("sample_CI_Exec.config" "VA_SampleHP.config" "VA_SampleLP.config" "sample_deviceCapability.ini" "sampleThunderEnabled.config")
-process_all_configs() {
-    local backup_dir=$1
-    local source_file=$2
-    local destination_dir=$3
-    local suffix=$4
-
-    # Iterate over backup files in the directory
-    for backup_file in "$backup_dir"/*"$suffix"; do
-        # Extract the base name of the backup file
-        base_name=$(basename "$backup_file")
-
-        # Check if the file is in the exclude list
-        if [[ " ${exclude_files[@]} " =~ " $base_name " ]]; then
-            echo "Skipping excluded file: $base_name" | tee -a "$log_file"
-            continue
-        fi
-
-        process_and_compare_backup_files "$backup_file" "$source_file" "$destination_dir"
-    done
-}
 
 
 # Run config file processing in parallel
-process_all_configs "$backup_dir_video" "$source_file_video" "$destination_dir_video" ".config" &
-process_all_configs "$backup_dir_device" "$source_file_device" "$destination_dir_device" ".config" &
-process_all_configs "$backup_dir_device_capabilities" "$source_file_device_capabilities" "$destination_dir_device_capabilities" "_deviceCapability.ini" &
 
 # Run Python file processing in parallel
 process_all_pythons "$backup_file_browser_validation" "$source_file_browser_validation" "$destination_dir_browser_validation" &

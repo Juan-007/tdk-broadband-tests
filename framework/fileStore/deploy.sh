@@ -28,9 +28,6 @@ fi
 # Function to copy files and directories
 copy_files() {
     local src_dir="/opt/apache-tomcat-7.0.96/webapps/rdk-test-tool/fileStore"
-    cp -r "$src_dir/tdkvRDKServiceConfig/" "$backup_dir/"
-    cp -r "$src_dir/tdkvDeviceConfig/" "$backup_dir/"
-    cp -r "$src_dir/tdkvDeviceCapabilities/" "$backup_dir/"
     cp "$src_dir/MediaValidationVariables.py" "$backup_dir/"
     cp "$src_dir/BrowserPerformanceVariables.py" "$backup_dir//"
 	cp "$src_dir/PerformanceTestVariables.py" "$backup_dir//"

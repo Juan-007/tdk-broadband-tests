@@ -124,71 +124,53 @@ def executeTest (self) :
     thunderPortDetails = getThunderPortDetails(self)
     thunderPort = thunderPortDetails["thunderPort"]
 
-    if method == "TestMgr_RdkService_Test" :
-        print("Executing %s...." % self.testCaseName)
-        sys.stdout.flush()
-        deviceInfo = getDeviceDetails(self);
-        deviceName = deviceInfo["devicename"]
-        deviceType = deviceInfo["boxtype"]
-        deviceMac = ""
+    result = "FAILURE";
+    #The library name will be componentName+lib. eg:rdkserviceslib
+    module=componentName+"lib";
+    """
+    This is to import the module which is stored in a variable.
+    Now "lib" contains all the function definitions in the imported module.
+    """
+    lib = importlib.import_module(module)
+    args = {}
+    if "params" in params:
+        args = params["params"]
+    step_description = method
+    if "get_step_description" in dir(lib):
         try:
-            deviceMac = deviceInfo["mac"]
-        except Exception as e:
-            print("\nException Occurred while getting MAC \n")
-        testXMLName = params["params"]["xml_name"]
-        details = "SUCCESS"
-        lib = importlib.import_module("tdkvRDKServicesTestlib")
-        executePluginTests_method = getattr(lib,"executePluginTests")
-        result =  executePluginTests_method(self, self.ip, thunderPort, deviceName, deviceType, deviceMac, self.realpath, self.url, testXMLName)
-    else:
-        result = "FAILURE";
-        #The library name will be componentName+lib. eg:rdkserviceslib
-        module=componentName+"lib";
-        """
-        This is to import the module which is stored in a variable.
-        Now "lib" contains all the function definitions in the imported module.
-        """
-        lib = importlib.import_module(module)
-        args = {}
-        if "params" in params:
-            args = params["params"]
-        step_description = method
-        if "get_step_description" in dir(lib):
-            try:
-                # pass the calling script's suite name so libs can vary wording by caller (e.g. rdkv_media vs rdkv_performance)
-                step_description = lib.get_step_description(method, args, self.parentTestCase.componentName)
-            except TypeError:
-                step_description = lib.get_step_description(method, args)
-        print("\n#==============================================================================#")
-        print("[STEP %d START] %s" % (step_number, step_description))
-        print("#==============================================================================#")
-        sys.stdout.flush()
-        print("Executing %s...." % self.testCaseName)
-        sys.stdout.flush()
-        """
-        The function 'init_method' helps to initialise the module with ip and port. User can use this function
-        if they want ip/port in library.
-        """
-        if "init_module" in dir(lib):
-            init_module_method = getattr(lib,"init_module")
-            init_module_method(self,thunderPort,getDeviceDetails(self))
-        """
-        The variable "method" contains the name of the function we need to invoke from "lib".
-        getattr is used to fetch the given method name from lib.
-        This is because the method name is stored as a string in the variable.
-        """
-        method_to_call = getattr(lib, method)
-        """
-        The variable "args" contains all the arguments we need to pass to the method.
-        This will be in the form of a dictionary(key:value pair).
-        Keys are the argument name, values are the argument value.
-        """
-        details = method_to_call(**args)
-        if isinstance(details , bytes):
-            details = details.decode().encode('ascii','ignore').decode()
-        if (details or details == None) and details != "EXCEPTION OCCURRED":
-            result = "SUCCESS"
-    if method != "TestMgr_RdkService_Test":
-        self.parentTestCase.pendingStandaloneStep = (step_number, result)
-        self.parentTestCase.pendingStandaloneStepObject = self
+            # Pass the calling script suite name so libraries can vary wording by caller.
+            step_description = lib.get_step_description(method, args, self.parentTestCase.componentName)
+        except TypeError:
+            step_description = lib.get_step_description(method, args)
+    print("\n#==============================================================================#")
+    print("[STEP %d START] %s" % (step_number, step_description))
+    print("#==============================================================================#")
+    sys.stdout.flush()
+    print("Executing %s...." % self.testCaseName)
+    sys.stdout.flush()
+    """
+    The function 'init_method' helps to initialise the module with ip and port. User can use this function
+    if they want ip/port in library.
+    """
+    if "init_module" in dir(lib):
+        init_module_method = getattr(lib,"init_module")
+        init_module_method(self,thunderPort,getDeviceDetails(self))
+    """
+    The variable "method" contains the name of the function we need to invoke from "lib".
+    getattr is used to fetch the given method name from lib.
+    This is because the method name is stored as a string in the variable.
+    """
+    method_to_call = getattr(lib, method)
+    """
+    The variable "args" contains all the arguments we need to pass to the method.
+    This will be in the form of a dictionary(key:value pair).
+    Keys are the argument name, values are the argument value.
+    """
+    details = method_to_call(**args)
+    if isinstance(details , bytes):
+        details = details.decode().encode('ascii','ignore').decode()
+    if (details or details == None) and details != "EXCEPTION OCCURRED":
+        result = "SUCCESS"
+    self.parentTestCase.pendingStandaloneStep = (step_number, result)
+    self.parentTestCase.pendingStandaloneStepObject = self
     return result,details;
