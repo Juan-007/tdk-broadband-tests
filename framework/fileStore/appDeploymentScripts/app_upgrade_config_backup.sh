@@ -46,9 +46,6 @@ destination_dir_performance_validation="/opt/tomcat/webapps/tdkservice/fileStore
 backup_file_stability_validation="$backup_dir/StabilityTestVariables.py"
 source_file_stability_validation="/opt/tomcat/webapps/tdkservice/fileStore/StabilityTestVariables.py"
 destination_dir_stability_validation="/opt/tomcat/webapps/tdkservice/fileStore/"
-backup_file_ipchange_validation="$backup_dir/IPChangeDetectionVariables.py"
-source_file_ipchange_validation="/opt/tomcat/webapps/tdkservice/fileStore/IPChangeDetectionVariables.py"
-destination_dir_ipchange_validation=
 
 process_and_compare_backup_files() {
     local backup_file=$1
@@ -209,7 +206,6 @@ process_all_pythons "$backup_file_browser_validation" "$source_file_browser_vali
 process_all_pythons "$backup_file_media_validation" "$source_file_media_validation" "$destination_dir_media_validation" &
 process_all_pythons "$backup_file_performance_validation" "$source_file_performance_validation" "$destination_dir_performance_validation" &
 process_all_pythons "$backup_file_stability_validation" "$source_file_stability_validation" "$destination_dir_stability_validation" &
-process_all_pythons "$backup_file_ipchange_validation" "$source_file_ipchange_validation" "$destination_dir_ipchange_validation" &
 
 # Wait for all background processes to complete
 wait

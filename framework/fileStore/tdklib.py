@@ -31,7 +31,6 @@ import signal
 import urllib.request, urllib.parse, urllib.error
 import datetime
 import threading
-import tdkStandAlonelib
 import requests
 from sys import exit
 from resetAgent import resetAgent
@@ -49,7 +48,6 @@ import inspect
 import io
 from xml.dom.minidom import Document,parseString
 from mySQLConfig import *
-from SSHUtility import *
 
 #------------------------------------------------------------------------------
 # Initialization
@@ -249,10 +247,9 @@ class PrimitiveTestCase:
     # Parameters   : expectedResult - Expected result for that particular test
     # Return Value : None
         if self.isStandAlone:
-            tdkStandAlonelib.closePendingStep(self.parentTestCase)
-        else:
-            print("Executing %s...." %self.testCaseName)
-            sys.stdout.flush()
+            raise RuntimeError("Standalone execution is not supported")
+        print("Executing %s...." %self.testCaseName)
+        sys.stdout.flush()
 
         if self.isStandAlone == False:
             data = json.loads(self.jsonMsgValue)
@@ -300,7 +297,7 @@ class PrimitiveTestCase:
             pObj=data["params"]
             self.expectedResult = expectedResult
             t1 = time.time();
-            status,details = tdkStandAlonelib.executeTest(self)
+            raise RuntimeError("Standalone execution is not supported")
             t2 = time.time()
             self.executionTime = t2-t1;
             self.xmlLogEnabled = False
@@ -1373,7 +1370,7 @@ class TDKScriptingLibrary:
     # Parameters   : cName - Component name
     # Return Value : null
         if self.isStandAlone:
-            tdkStandAlonelib.closePendingStep(self)
+            raise RuntimeError("Standalone execution is not supported")
         try:
             if self.isStandAlone == False:
                 if(self.enabledXmlLogging == True):
@@ -2065,7 +2062,6 @@ def ssh_fetch_wpe_pid(self):
     hostname = self.IP
     #Execute command to get WPE PID
     command = "pgrep WPEFramework"
-    result = ssh_and_execute(configValues[0], hostname, configValues[1], configValues[2], command)
     output = result.strip().split('\n')
     if len(output) >= 2:
         pid = int(output[1])
@@ -2087,7 +2083,6 @@ def check_core_files(self,wpe_pid):
     try:
         end_time = int(time.time())
         find_command = 'find / ~ -type f -name "core.*" 2>/dev/null'
-        result = ssh_and_execute(configValues[0], hostname, configValues[1], configValues[2], find_command)
         output = result.strip().split('\n')
         if len(output) >= 2:
             core_files = result.strip().split('\n')
